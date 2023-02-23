@@ -104,3 +104,39 @@ module.exports.deleteUserDBService = (userDetails)=>  {
       })
    });
 }
+
+module.exports.updateUserDBService = (email, userDetails) => {
+   var encrypted = encryptor.encrypt(userDetails.password);
+   return new Promise(function myFn(resolve, reject) {
+      userModel.findOne({email: email}, function getresult(errorvalue, result) {
+         console.log(errorvalue)
+         if(errorvalue) {
+            reject({status: false, msg: "Datos Invalidos"});
+         }
+         else {
+            if(result != undefined || result != null) {
+               result.firstname = userDetails.firstname;
+               result.lastname = userDetails.lastname;
+               result.email = userDetails.email;
+               result.password = userDetails.password;
+               var encrypted = encryptor.encrypt(userDetails.password);
+               result.password = encrypted;
+               
+               result.save(function resultHandle(error, result) {
+
+                  if (error) {
+                     resolve(false);
+                  } else {
+                     resolve(true);
+                  }
+               resolve(true);
+               })
+            }
+            else {
+               resolve(false);
+            }
+         }
+      })
+       
+   });
+}
